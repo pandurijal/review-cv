@@ -17,7 +17,7 @@ interface DetailedReviewSectionProps {
   title: string;
   strengths: string[];
   improvements: string[];
-  extra?: Record<string, string | string[]>;
+  extra?: Record<string, string | string[] | undefined>;
 }
 
 interface PriorityActionCardProps {
@@ -393,7 +393,7 @@ const CVReviewer: React.FC = () => {
                               "Keyword Score": section.keywordScore,
                               "Missing Keywords": section.missingKeywords,
                             }
-                          : null
+                          : undefined
                       }
                     />
                   )
