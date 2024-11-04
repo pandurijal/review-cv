@@ -147,8 +147,8 @@ Analyze the CV and return a JSON object that strictly matches this structure (ex
         },
         feedback,
       });
-    } catch (parseError) {
-      console.error("JSON Parse Error:", message.content[0].text);
+    } catch (err) {
+      console.error("JSON Parse Error:", message.content[0].text, err);
       return NextResponse.json(
         {
           success: false,
