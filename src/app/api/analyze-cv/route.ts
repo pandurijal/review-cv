@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
+import { TextBlock } from "@anthropic-ai/sdk/resources/messages.mjs";
 
 const pdfParse = require("pdf-parse/lib/pdf-parse.js");
 
@@ -48,7 +49,11 @@ ${text}`,
     ],
   });
 
-  return message.content[0].text.toLowerCase().includes("true");
+  const content = message.content[0];
+
+  return (
+    content?.type === "text" && content.text.toLowerCase().includes("true")
+  );
 }
 
 async function extractText(file: File): Promise<string> {
@@ -137,7 +142,8 @@ Analyze the CV and return a JSON object that strictly matches this structure (ex
     });
 
     try {
-      const feedback: Feedback = JSON.parse(message.content[0].text);
+      const content = message.content[0] as TextBlock;
+      const feedback: Feedback = JSON.parse(content.text);
       return NextResponse.json({
         success: true,
         fileInfo: {
@@ -148,12 +154,13 @@ Analyze the CV and return a JSON object that strictly matches this structure (ex
         feedback,
       });
     } catch (err) {
-      console.error("JSON Parse Error:", message.content[0].text, err);
+      const content = message.content[0] as TextBlock;
+      console.error("JSON Parse Error:", content.text, err);
       return NextResponse.json(
         {
           success: false,
           error: "Failed to parse AI response",
-          rawResponse: message.content[0].text,
+          rawResponse: content.text,
         },
         { status: 500 }
       );
